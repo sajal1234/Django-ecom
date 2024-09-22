@@ -26,15 +26,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step to SSH into the EC2 instance without TTY allocation
-      - name: SSH into EC2 Instance
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.EC2_HOST }}       # Hostname or IP of your EC2 instance
-          username: ec2-user                  # Change based on the OS (e.g., ubuntu for Ubuntu, ec2-user for Amazon Linux)
-          key: ${{ secrets.EC2_SSH_KEY }}     # The SSH private key stored in GitHub secrets
-          script: |
-            # Commands to run once logged into EC2
-            echo "Logged in via GitHub Actions"
-            uptime
-            tty:false
+#      # Step to SSH into the EC2 instance without TTY allocation
+#      - name: SSH into EC2 Instance
+#        uses: appleboy/ssh-action@v0.1.6
+#        with:
+#          host: ${{ secrets.EC2_HOST }}       # Hostname or IP of your EC2 instance
+#          username: ec2-user                  # Change based on the OS (e.g., ubuntu for Ubuntu, ec2-user for Amazon Linux)
+#          key: ${{ secrets.EC2_SSH_KEY }}     # The SSH private key stored in GitHub secrets
+#          script: |
+#            # Commands to run once logged into EC2
+#            echo "Logged in via GitHub Actions"
+#            uptime
+#            tty:false
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 13.53.131.91 >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
