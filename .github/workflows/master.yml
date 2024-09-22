@@ -13,6 +13,21 @@ jobs:
       # Check out
       - name: Checkout code
         uses: actions/checkout@v3
+        env:
+            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            HOSTNAME: ec2-13-53-131-91.eu-north-1.compute.amazonaws.com
+            USER_NAME: ec2-user
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+#              # Now we have got the access of EC2 and we will start the deploy .
+#              cd /home/ubuntu/<PROJECT_DIRECTORY> &&
+#              git checkout dev &&
+#              git fetch --all &&
+#              git reset --hard origin/dev &&
+#              git pull origin dev &&
 
       # Set up Python
       - name: Set up Python
@@ -25,6 +40,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
 
 #      # Step to SSH into the EC2 instance without TTY allocation
 #      - name: SSH into EC2 Instance
@@ -45,12 +61,12 @@ jobs:
 #          chmod 600 ~/.ssh/id_rsa
 #          ssh-keyscan -H 13.53.131.91 >> ~/.ssh/known_hosts
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-#      - name: Deploy via SSH
-#        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
-      - name: Add EC2 host to known hosts
-        run: ssh-keyscan -H 13.53.131.91>> ~/.ssh/known_hosts
+##      - name: Setup SSH
+##        uses: webfactory/ssh-agent@v0.5.0
+##        with:
+##          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+#
+##      - name: Deploy via SSH
+##        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
+#      - name: Add EC2 host to known hosts
+#        run: ssh-keyscan -H 13.53.131.91>> ~/.ssh/known_hosts
