@@ -26,28 +26,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # SSH into the EC2 instance and deploy
-      - name: Deploy to EC2
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-          DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
-          DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
-          DJANGO_SUPERUSER_EMAIL: ${{ secrets.DJANGO_SUPERUSER_EMAIL }}
-        run: |
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$EC2_HOST << EOF
-            cd ~/my-django-app
-            git pull origin main
-            source ~/venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
-            python manage.py collectstatic --noinput
-
-            # Create Django superuser
-            echo "from django.contrib.auth.models import User; User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists() or User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')" | python manage.py shell
-
-            sudo systemctl restart gunicorn
-            sudo systemctl restart nginx
-          EOF
+      # Step to SSH into the EC2 instance without TTY allocation
+      - name: SSH into EC2 Instance
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}       # Hostname or IP of your EC2 instance
+          username: ec2-user                  # Change based on the OS (e.g., ubuntu for Ubuntu, ec2-user for Amazon Linux)
+          key: ${{ secrets.EC2_SSH_KEY }}     # The SSH private key stored in GitHub secrets
+          script: |
+            # Commands to run once logged into EC2
+            echo "Logged in via GitHub Actions"
+            uptime
+            tty:false
