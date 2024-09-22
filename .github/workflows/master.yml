@@ -38,12 +38,19 @@ jobs:
 #            echo "Logged in via GitHub Actions"
 #            uptime
 #            tty:false
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 13.53.131.91 >> ~/.ssh/known_hosts
+#      - name: Set up SSH
+#        run: |
+#          mkdir -p ~/.ssh
+#          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+#          chmod 600 ~/.ssh/id_rsa
+#          ssh-keyscan -H 13.53.131.91 >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
-        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+#      - name: Deploy via SSH
+#        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
+      - name: Add EC2 host to known hosts
+        run: ssh-keyscan -H 13.53.131.91>> ~/.ssh/known_hosts
