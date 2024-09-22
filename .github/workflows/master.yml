@@ -29,9 +29,9 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > private_key
           chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key $USER_NAME@$HOSTNAME "ls"
-#              # Now we have got the access of EC2 and we will start the deploy .
-#              cd /home/ubuntu/<PROJECT_DIRECTORY> &&
+          ssh -o StrictHostKeyChecking=no -i private_key $USER_NAME@$HOSTNAME "cd /home/ubuntu" "ls"
+        # Now we have got the access of EC2 and we will start the deploy .
+              cd /home/ubuntu/<PROJECT_DIRECTORY> &&
 #              git checkout dev &&
 #              git fetch --all &&
 #              git reset --hard origin/dev &&
@@ -48,33 +48,3 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-
-#      # Step to SSH into the EC2 instance without TTY allocation
-#      - name: SSH into EC2 Instance
-#        uses: appleboy/ssh-action@v0.1.6
-#        with:
-#          host: ${{ secrets.EC2_HOST }}       # Hostname or IP of your EC2 instance
-#          username: ec2-user                  # Change based on the OS (e.g., ubuntu for Ubuntu, ec2-user for Amazon Linux)
-#          key: ${{ secrets.EC2_SSH_KEY }}     # The SSH private key stored in GitHub secrets
-#          script: |
-#            # Commands to run once logged into EC2
-#            echo "Logged in via GitHub Actions"
-#            uptime
-#            tty:false
-#      - name: Set up SSH
-#        run: |
-#          mkdir -p ~/.ssh
-#          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-#          chmod 600 ~/.ssh/id_rsa
-#          ssh-keyscan -H 13.53.131.91 >> ~/.ssh/known_hosts
-
-##      - name: Setup SSH
-##        uses: webfactory/ssh-agent@v0.5.0
-##        with:
-##          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-#
-##      - name: Deploy via SSH
-##        run: ssh -i ~/.ssh/id_rsa ec2-user@13.53.131.91 "ls"
-#      - name: Add EC2 host to known hosts
-#        run: ssh-keyscan -H 13.53.131.91>> ~/.ssh/known_hosts
