@@ -1,4 +1,4 @@
-name: Django Deploy to EC2
+name: Django Deployment
 
 on:
   push:
@@ -10,112 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Check out the code
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Start ssh-agent and load the private key
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
 
-      # Set up Python
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      # SSH into EC2 and deploy the application
-      - name: SSH Deploy to Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: 13.53.131.91
-          username: ec2-user
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            # Navigate to the project directory
-            cd /home/ec2-user/Django-ecom
+    - name: Deploy to EC2
+      env:
+        EC2_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ec2-user@13-60-196-228 << 'EOF'
+        cd ~/my_django_project
+        git pull origin main
+        source venv/bin/activate
+        pip install -r requirements.txt
+        python manage.py migrate
+        python manage.py collectstatic --noinput
+        sudo systemctl restart gunicorn
+        EOF
 
-            # Create a virtual environment and activate it
-            python3 -m venv venv
-            source venv/bin/activate
-
-            # Install dependencies from requirements.txt
-            pip install -r requirements.txt
-
-            # Run migrations
-            python manage.py migrate
-
-            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
-            python manage.py runserver 0.0.0.0:8000 &
-
-            # You can uncomment these lines to restart gunicorn or nginx if you're using them
-#             sudo systemctl restart gunicorn
-#             sudo systemctl restart nginx
-
-
-#name: Django Deploy to EC2
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#
-#jobs:
-#  deploy:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      # Check out the code
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      # Start ssh-agent and load the private key
-#      - name: Set up SSH key
-#        uses: webfactory/ssh-agent@v0.5.4
-#        with:
-#          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-#
-#      # Set up Python
-#      - name: Set up Python
-#        uses: actions/setup-python@v3
-#        with:
-#          python-version: '3.12'
-#
-#      # Install dependencies
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install -r requirements.txt
-#
-#      - name: SSH Deploy to Server
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: 13.53.131.91
-#          username: ec2-user
-#          key: ${{ secrets.SSH_PRIVATE_KEY }}
-#          port: 22
-#          script: |
-#            # Ensure Python 3 is installed
-#            sudo yum install python3 -y
-#
-#            # Ensure pip3 is installed
-#            sudo yum install python3-pip -y
-#
-#            # Check if the virtual environment already exists
-#            if [ ! -d "venv" ]; then
-#              python3 -m venv venv  # Create virtual environment if it doesn't exist
-#            fi
-#
-#            # Activate the virtual environment
-#            source venv/bin/activate
-#
-#            # Upgrade pip and install requirements
-#            pip install --upgrade pip
-#            pip install -r requirements.txt
-#
-#            # Run migrations and start the Django server
-#            python manage.py migrate
-#            python manage.py runserver
