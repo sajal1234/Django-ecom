@@ -37,16 +37,43 @@ jobs:
           script: |
             # Navigate to the project directory
             cd /home/ec2-user/Django-ecom
-            # Create a virtual environment and activate it
-            python3 -m venv venv
-            source venv/bin/activate
-            # Install dependencies from requirements.txt
+
+            # Activate the virtual environment if it exists
+            if [ -d "venv" ]; then
+              source venv/bin/activate
+            else
+              python3.9 -m venv venv
+              source venv/bin/activate
+              pip install -r requirements.txt
+            fi
+
+            # Pull the latest code
+            git pull origin main
+
+            # Install dependencies (if any new ones were added)
             pip install -r requirements.txt
+
             # Run migrations
             python manage.py migrate
-            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
-            python manage.py runserver 0.0.0.0:8000 &
-            # You can uncomment these lines to restart gunicorn or nginx if you're using them
+
+            # Collect static files
+            python manage.py collectstatic --noinput
+
+            # Restart the application server (e.g., Gunicorn)
+            sudo systemctl restart gunicorn
+#          script: |
+#            # Navigate to the project directory
+#            cd /home/ec2-user/Django-ecom
+#            # Create a virtual environment and activate it
+#            python3 -m venv venv
+#            source venv/bin/activate
+#            # Install dependencies from requirements.txt
+#            pip install -r requirements.txt
+#            # Run migrations
+#            python manage.py migrate
+#            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
+#            python manage.py runserver 0.0.0.0:8000 &
+#            # You can uncomment these lines to restart gunicorn or nginx if you're using them
 #             sudo systemctl restart gunicorn
 #             sudo systemctl restart nginx
 
