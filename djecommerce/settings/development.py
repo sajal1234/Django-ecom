@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = ['13.53.131.91:8000']
+ALLOWED_HOSTS = ['13.53.131.91:8000','0.0.0.0', '127.0.0.1']
 
 INSTALLED_APPS += [
     'debug_toolbar'
@@ -42,6 +42,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+ROOT_URLCONF = 'djecommerce.urls'
 STRIPE_PUBLIC_KEY = config('STRIPE_TEST_PUBLIC_KEY')
 STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')

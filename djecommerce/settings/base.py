@@ -36,7 +36,7 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-ROOT_URLCONF = 'djecommerce.urls'
+# ROOT_URLCONF = 'djecommerce.urls'
 
 TEMPLATES = [
     {
