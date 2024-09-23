@@ -1,4 +1,4 @@
-name: Django Deployment
+name: Django Deploy to EC2
 
 on:
   push:
@@ -10,30 +10,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
+      # Start ssh-agent and load the private key
+      - name: Set up SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
 
-    - name: Deploy to EC2
-      env:
-        EC2_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ec2-user@13-60-196-228 << 'EOF'
-        cd ~/my_django_project
-        git pull origin main
-        source venv/bin/activate
-        pip install -r requirements.txt
-        python manage.py migrate
-        python manage.py collectstatic --noinput
-        sudo systemctl restart gunicorn
-        EOF
+      # SSH into EC2 and deploy the application
+      - name: SSH Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 13.53.131.91
+          username: ec2-user
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Navigate to the project directory
+            cd /home/ec2-user/Django-ecom
+
+            # Create a virtual environment and activate it
+            python3 -m venv venv
+            source venv/bin/activate
+
+            # Install dependencies from requirements.txt
+            pip install -r requirements.txt
+
+            # Run migrations
+            python manage.py migrate
+
+            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
+            python manage.py runserver 0.0.0.0:8000 &
+
+            and set all expeted inbound rule
+            Custom TCP
+            TCP
+            8000
+            0.0.0.0/0
 
