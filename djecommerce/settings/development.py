@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = True
-ALLOWED_HOSTS = ['127.0.0.1','13.53.131.91:8000']
+ALLOWED_HOSTS = ['http://13.53.131.91:8000']
 
 INSTALLED_APPS += [
     'debug_toolbar'
