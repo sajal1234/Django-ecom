@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.12'
+          python-version: '3.9.0'
 
       # SSH into EC2 and deploy the application
       - name: SSH Deploy to Server
