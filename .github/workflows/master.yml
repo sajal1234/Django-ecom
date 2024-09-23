@@ -20,23 +20,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-#      # Set up the SSH key and deploy
-#      - name: Deploy via SSH
-#        env:
-#          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#          HOSTNAME: 13.53.131.91
-#          USER_NAME: ec2-user
-#        run: |
-#          echo "$PRIVATE_KEY" > private_key
-#          chmod 600 private_key
-#          ssh -o StrictHostKeyChecking=no -i private_key $USER_NAME@$HOSTNAME "ls /home/ec2-user"
-        # Now we have got the access of EC2 and we will start the deploy .
-#              cd /home/ubuntu/<PROJECT_DIRECTORY> &&
-#              git checkout dev &&
-#              git fetch --all &&
-#              git reset --hard origin/dev &&
-#              git pull origin dev &&
-
       # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v3
@@ -57,11 +40,23 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            git config --global --add safe.directory /home/ec2-user/Django-ecom
             cd /home/ec2-user/Django-ecom
             git pull origin main
+            # Install Python if not already installed
+            sudo yum install python3 -y
+            # Set up virtual environment if it doesn't exist
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            # Activate the virtual environment
             source venv/bin/activate
+            # Install Python dependencies
+            pip install --upgrade pip
             pip install -r requirements.txt
+            # Run migrations and the Django server
             python manage.py migrate
-            python manage.py runserver &&
-#            sudo systemctl restart gunicorn  # Restart gunicorn or any other service
-#            sudo systemctl restart nginx
+            python manage.py runserver
+            # Uncomment below if using gunicorn and nginx
+            # sudo systemctl restart gunicorn  
+            # sudo systemctl restart nginx
