@@ -47,7 +47,7 @@ jobs:
             # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
             python manage.py runserver 0.0.0.0:8000 &
             # You can uncomment these lines to restart gunicorn or nginx if you're using them
-             sudo systemctl restart gunicorn
+#             sudo systemctl restart gunicorn
 #             sudo systemctl restart nginx
 
 
