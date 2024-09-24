@@ -53,9 +53,7 @@ jobs:
             python manage.py collectstatic --noinput
             # Use Gunicorn to serve the application instead of the development server
             gunicorn djcommerce.wsgi:application --bind 0.0.0.0:8000 --daemon
-            # Restart Gunicorn to apply the changes
-            sudo systemctl restart Django-ecom.service
-#            python manage.py runserver 0.0.0.0:8000 &
+            python manage.py runserver 0.0.0.0:8000 &
             set +x  # Disable debug mode
 
 
