@@ -44,6 +44,7 @@ jobs:
               python3 -m venv venv
             fi
             source venv/bin/activate
+            git pull origin main
             # Install dependencies from requirements.txt
             pip install --upgrade pip
             pip install -r requirements.txt
