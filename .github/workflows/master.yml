@@ -31,12 +31,12 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: 13.53.131.91
-          username: root
+          username: ec2-user
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
             # Navigate to the project directory
-            cd /home/root/Django-ecom-main
+            cd /home/ec2-user/Django-ecom
             # Create a virtual environment and activate it
             python3 -m venv venv
             source venv/bin/activate
@@ -47,7 +47,7 @@ jobs:
             # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
             python manage.py runserver 0.0.0.0:8000 &
             # You can uncomment these lines to restart gunicorn or nginx if you're using them
-             sudo systemctl restart gunicorn
+#             sudo systemctl restart gunicorn
 #             sudo systemctl restart nginx
 
 
