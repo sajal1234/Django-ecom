@@ -55,7 +55,7 @@ jobs:
             gunicorn djcommerce.wsgi:application --bind 0.0.0.0:8000 --daemon
             # Restart Gunicorn to apply the changes
 #            sudo systemctl restart django-ecom.service
-#            python manage.py runserver 0.0.0.0:8000 &
+            python manage.py runserver 0.0.0.0:8000 &
             set +x  # Disable debug mode
 
 
