@@ -43,6 +43,7 @@ jobs:
               python3 -m venv venv
             fi
             source venv/bin/activate
+            git pull origin main
             # Install dependencies from requirements.txt
             pip install --upgrade pip
             pip install -r requirements.txt
@@ -52,8 +53,9 @@ jobs:
             python manage.py collectstatic --noinput
             # Use Gunicorn to serve the application instead of the development server
             gunicorn djcommerce.wsgi:application --bind 0.0.0.0:8000 --daemon
-            # Uncomment the line below if you want to use the Django development server (not recommended for production)
-            python manage.py runserver 0.0.0.0:8000 &
+            # Restart Gunicorn to apply the changes
+            sudo systemctl restart Django-ecom.service
+#            python manage.py runserver 0.0.0.0:8000 &
             set +x  # Disable debug mode
 
 
