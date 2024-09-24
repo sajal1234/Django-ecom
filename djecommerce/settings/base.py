@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'django_countries',
-    'core'
+    'core',
+    # 'stackifyapm.contrib.django'
 
 ]
 
@@ -34,6 +35,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    # 'stackifyapm.contrib.django.middleware.TracingMiddleware',
 ]
 
 ROOT_URLCONF = 'djecommerce.urls'
@@ -103,3 +105,6 @@ LOGGING = {
         },
     },
 }
+#
+# APPLICATION_NAME = 'Python Application'
+# ENVIRONMENT = 'Production'
