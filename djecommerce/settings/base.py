@@ -7,7 +7,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(
 from decouple import Config, RepositoryEnv
 
 config = Config(RepositoryEnv('.env'))
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='fallback_secret_key')
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
