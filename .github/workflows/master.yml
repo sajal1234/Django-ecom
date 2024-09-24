@@ -50,7 +50,7 @@ jobs:
             # Collect static files
             python manage.py collectstatic --noinput
             # Use Gunicorn to serve the application instead of the development server
-            # gunicorn your_project_name.wsgi:application --bind 0.0.0.0:8000 --daemon
+            gunicorn djcommerce.wsgi:application --bind 0.0.0.0:8000 --daemon
             # Uncomment the line below if you want to use the Django development server (not recommended for production)
             python manage.py runserver 0.0.0.0:8000 &
 
