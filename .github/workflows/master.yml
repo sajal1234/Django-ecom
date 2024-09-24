@@ -53,6 +53,11 @@ jobs:
             python manage.py migrate
             # Collect static files
             python manage.py collectstatic --noinput
+             # Create Django superuser (if it doesn't already exist)
+            echo "from django.contrib.auth import get_user_model; User = get_user_model(); \
+              User.objects.filter(username='admin').exists() or \
+              User.objects.create_superuser('admin', 'admin@example.com', 'admin')" \
+              | python manage.py shell
             # Use Gunicorn to serve the application instead of the development server
             gunicorn djcommerce.wsgi:application --bind 0.0.0.0:8000 --daemon
             python manage.py runserver 0.0.0.0:8000 &
