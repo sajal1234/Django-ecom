@@ -35,20 +35,49 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # Navigate to the project directory
-            cd /home/ec2-user/Django-ecom
-            # Create a virtual environment and activate it
-            python3 -m venv venv
+            # Navigate to the correct project directory
+            cd /home/ec2-user/d-com/Django-ecom-main
+            # Create a virtual environment if it doesn't exist
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
             source venv/bin/activate
             # Install dependencies from requirements.txt
+            pip install --upgrade pip
             pip install -r requirements.txt
             # Run migrations
             python manage.py migrate
-            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
+            # Collect static files
+            python manage.py collectstatic --noinput
+            # Use Gunicorn to serve the application instead of the development server
+            # gunicorn your_project_name.wsgi:application --bind 0.0.0.0:8000 --daemon
+            # Uncomment the line below if you want to use the Django development server (not recommended for production)
             python manage.py runserver 0.0.0.0:8000 &
-            # You can uncomment these lines to restart gunicorn or nginx if you're using them
-#             sudo systemctl restart gunicorn
-#             sudo systemctl restart nginx
+
+
+#      # SSH into EC2 and deploy the application
+#      - name: SSH Deploy to Server
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: 13.53.131.91
+#          username: ec2-user
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          port: 22
+#          script: |
+#            # Navigate to the project directory
+#            cd /home/ec2-user/Django-ecom
+#            # Create a virtual environment and activate it
+#            python3 -m venv venv
+#            source venv/bin/activate
+#            # Install dependencies from requirements.txt
+#            pip install -r requirements.txt
+#            # Run migrations
+#            python manage.py migrate
+#            # (Optional) Run the Django development server (you can replace this with gunicorn or other server start commands)
+#            python manage.py runserver 0.0.0.0:8000 &
+#            # You can uncomment these lines to restart gunicorn or nginx if you're using them
+##             sudo systemctl restart gunicorn
+##             sudo systemctl restart nginx
 
 
 #name: Django Deploy to EC2
