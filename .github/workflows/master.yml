@@ -36,7 +36,7 @@ jobs:
           port: 22
           script: |
             # Navigate to the correct project directory
-            cd /home/ec2-user/d-com/Django-ecom-main
+            cd /home/ec2-user/Django-ecom
             # Create a virtual environment if it doesn't exist
             if [ ! -d "venv" ]; then
               python3 -m venv venv
